@@ -3,8 +3,8 @@ var router = express.Router();
 const modelsAccount = require('../models/account')
 const bcrypt = require('bcrypt')
 const mongoose = require('mongoose')
-const jwt = require('json-web-token')
 /* GET home page. */
+//http://localhost:4000/account/allAccount
 router.get('/allAccount', async function(req, res, next) {
     const data = await modelsAccount.find();
     res.json(data)
@@ -22,39 +22,30 @@ router.get('/allAccount', async function(req, res, next) {
                 res.status(500).json({err:"đã lỗi"})
         }
     })
-    // Đăng nhập người dùng
+// Đăng nhập
 router.post('/login', async function(req, res, next) {
     try {
         const { email, password } = req.body;
-        // Kiểm tra xem email và password đã được cung cấp không
-        if (!email || !password) {
-            return res.status(400).json({ message: 'Vui lòng cung cấp email và mật khẩu.' });
-        }
-        // Tìm kiếm người dùng trong database bằng email
+        
+        // Tìm người dùng theo email
         const user = await modelsAccount.findOne({ email });
+        
+        // Nếu không tìm thấy người dùng
         if (!user) {
-            return res.status(401).json({ message: 'Email hoặc mật khẩu không đúng' });
+            return res.status(404).json({ message: 'Người dùng không tồn tại' });
         }
-        // Kiểm tra mật khẩu
-        const validPassword = await bcrypt.compare(password, user.password);
-        if (!validPassword) {
-            return res.status(401).json({ message: 'Email hoặc mật khẩu không đúng' });
+        // So sánh mật khẩu
+        const isMatch = await bcrypt.compare(password, user.password);
+        
+        if (!isMatch) {
+            return res.status(401).json({ message: 'Mật khẩu không đúng' });
         }
-        // Tạo và trả về token JWT nếu đăng nhập thành công
-        const token = jwt.sign({ userId: user._id, role: user.role }, 'secret_key', { expiresIn: '1h' });
-        console.log(token);
-        res.status(200).json({ message: 'Đăng nhập thành công', token,role: user.role,
-        // account: {
-        //     _id: user._id,
-        //     email: user.email,
-        //     fisrtName: user.fisrtName,
-        //     lastName: user.lastName,
-        //     avata:user.avata
-        // } 
-    });
-    } catch (error) {
-        console.error(error);
-        res.status(500).json({ message: 'Đã xảy ra lỗi' });
+
+        // Nếu đăng nhập thành công, có thể trả về thông tin người dùng hoặc tạo token
+        res.status(200).json({ message: 'Đăng nhập thành công', user: { email: user.email, firstName: user.firstName, lastName: user.lastName } });
+    } catch (err) {
+        console.error('Lỗi', err);
+        res.status(500).json({ err: 'Đã có lỗi xảy ra' });
     }
 });
 router.delete('/delete/:id',async function(req,res,next){
@@ -66,6 +57,4 @@ router.delete('/delete/:id',async function(req,res,next){
         res.status(500).json('xóa không thành công')
     }
 })
-// đổi thông tin cá nhân
-
 module.exports = router;
