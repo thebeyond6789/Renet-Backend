@@ -2,11 +2,11 @@ var express = require('express');
 var router = express.Router();
 const mongoose = require('mongoose')
 const modelsPost = require('../models/post');
-/* GET home page. */
+/* GET home page. */ // chưa trả về trạng thái status
 router.get('/allPost', async function(req, res, next) {
     const data = await modelsPost.find();
     res.json(data)
-});
+}); 
 router.get('/postByAccount/:id', async function(req, res, next) {
     const {id}= req.params
     const data = await modelsPost.find({'idAccount':id});
@@ -17,6 +17,7 @@ router.get('/postByID/:id', async function(req,res,next){
     const data = await modelsPost.findOne({'_id':id})
     res.json(data)
 })
+
 // add
 router.post('/add', async function(req, res, next) {
     try {
@@ -38,7 +39,8 @@ router.put('/edit/:id', async function(req, res, next) {
     } catch (error) {
         res.status(500).json({ message: 'Không thành công', error });
     }
-});
+}); // không thành công và không có id : status cho 2 trạng thái
+
 // delete
 router.delete('/delete/:id', async function(req,res,next){
     try{

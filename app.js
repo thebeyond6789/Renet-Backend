@@ -5,6 +5,16 @@ var cookieParser = require("cookie-parser");
 var logger = require("morgan");
 const cors = require("cors");
 const mongoose = require("mongoose");
+const dotenv = require("dotenv");
+const cloudinary = require("cloudinary").v2;
+dotenv.config();
+
+cloudinary.config({
+  cloud_name: process.env.CLOUDINARY_NAME,
+  api_key: process.env.CLOUDINARY_API_KEY,
+  api_secret: process.env.CLOUDINARY_API_SECRET,
+});
+
 // models
 require("./models/post");
 require("./models/account");
@@ -14,6 +24,7 @@ require("./models/mesage");
 require("./models/favorite");
 require("./models/reel");
 require("./models/notification")
+
 // router
 var postRouter = require("./routes/post");
 var accountRouter = require("./routes/account");
@@ -24,14 +35,16 @@ var favoriteRouter = require("./routes/favorite");
 var reelRouter = require("./routes/reel");
 var notificationRouter = require('./routes/notification')
 var app = express();
+
 app.use(cors());
+
 // db
 mongoose.connect('mongodb://localhost:27017/mangxahoi')
   .then(() =>
     console.log(">>>>>>>>>>>>>>>>>> Bạn đã kết nối với database thành công")
   )
   .catch((err) =>
-    console.log(">>>>>>>>>>> Bạn kết nối khoong thành công (NGU)", err)
+    console.log(">>>>>>>>>>> Bạn kết nối khoong thành công", err)
   );
 
 // view engine setup
@@ -51,7 +64,8 @@ app.use("/friendship", friendshipRouter);
 app.use("/mesage", mesageRouter);
 app.use("/favorite", favoriteRouter);
 app.use("/reel", reelRouter);
-app.use('/notification',notificationRouter)
+app.use('/notification', notificationRouter)
+
 // catch 404 and forward to error handler
 app.use(function (req, res, next) {
   next(createError(404));
@@ -62,7 +76,6 @@ app.listen(PORT, () => {
   console.log(`Server is running on port ${PORT}`);
 });
 
-// error handler
 app.use(function (err, req, res, next) {
   // set locals, only providing error in development
   res.locals.message = err.message;
