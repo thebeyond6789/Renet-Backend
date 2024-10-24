@@ -34,6 +34,7 @@ var mesageRouter = require("./routes/mesage");
 var favoriteRouter = require("./routes/favorite");
 var reelRouter = require("./routes/reel");
 var notificationRouter = require('./routes/notification')
+var followerRouter = require('./routes/followers');
 var app = express();
 
 app.use(cors());
@@ -65,6 +66,7 @@ app.use("/mesage", mesageRouter);
 app.use("/favorite", favoriteRouter);
 app.use("/reel", reelRouter);
 app.use('/notification', notificationRouter)
+app.use('/followers', followerRouter)
 
 // catch 404 and forward to error handler
 app.use(function (req, res, next) {
@@ -87,3 +89,10 @@ app.use(function (err, req, res, next) {
 });
 
 module.exports = app;
+// account: {
+        //     _id: user._id,
+        //     email: user.email,
+        //     fisrtName: user.fisrtName,
+        //     lastName: user.lastName,
+        //     avata:user.avata
+        // } 
