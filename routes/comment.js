@@ -1,6 +1,7 @@
 var express = require('express');
 var router = express.Router();
-const modelsComment = require('../models/comment')
+const modelsComment = require('../models/comment');
+const mongoose = require('mongoose')
 /* GET home page. */
 router.get('/allComment', async function(req, res, next) {
     const data = await modelsComment.find();
@@ -17,6 +18,17 @@ router.get('/commentByReel/:id', async function(req,res,next){
     const {id} = req.params;
     const data = await modelsComment.find({'idReel':id})
     res.json(data)
+})
+//add post
+router.post('/addpost', async function(req,res,next){
+    try {
+        const {comment,idPost,idAccount} = req.body;
+        const _id = new mongoose.Types.ObjectId()
+        const data = await modelsComment.create({_id,comment,idPost,idAccount})
+        res.status(201).json({ message: 'Thêm thành công', data });
+    } catch (error) {
+        res.status(500).json({ message: 'Không thành công', error });
+    }
 })
 // comment
 router.put('/edit/:id', async function(req,res,next){
